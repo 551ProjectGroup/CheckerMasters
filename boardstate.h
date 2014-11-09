@@ -13,6 +13,7 @@ class UserInput{
   Coor current;
   Coor next;
  public:
+  UserInput(int i, Coor c, Coor n): interType(i), current(c), next(n){}
   UserInput(UserInput & rhs){
     interType = rhs.interType;
     current.x = rhs.current.x;
@@ -38,15 +39,22 @@ class UserInput{
 class Piece{
  private:
   int empty; //empty -> 1 ignore all fields
-  int pieceColor; //1 -> red, 0 -> black
+  int pieceColor; //1 -> red, 0 -> black, 2-> not valid bc piece is empty
   int type; //0 -> normal, 1 -> king
   int upgrade; //1 -> yes, 0 -> no
   int state; //0 -> dead, 1-> alive
  public:
- Piece(): empty(1), pieceColor(0), type(0), upgrade(0), state(1){} 
+ Piece(): empty(1), pieceColor(2), type(0), upgrade(0), state(1){} 
  Piece(int c): empty(0), pieceColor(c), type(0), upgrade(0), state(1){}
  Piece(int c, int t, int u): empty(0), pieceColor(c), type(t), upgrade(u), state(1){}
- Piece & operator=(Piece & rhs){
+  Piece(Piece & rhs){
+    empty = rhs.empty;
+    pieceColor = rhs.pieceColor;
+    type = rhs.type;
+    upgrade = rhs.upgrade;
+    state = rhs.state;
+  }
+  Piece & operator=(Piece & rhs){
    if (this != &rhs){
      empty = rhs.empty;
      pieceColor = rhs.pieceColor;
@@ -56,7 +64,12 @@ class Piece{
    }
    return *this;
  }
- int getPieceColor(){ return pieceColor;}
+ int getPieceColor(){ 
+   if (empty == 0){
+     return pieceColor;
+   }
+   return 2;
+ }
  int getType(){ return type;}
  int getUpgrade(){ return upgrade;}
  int getEmpty(){ return empty;}
@@ -76,6 +89,8 @@ class BoardState{
   int getTurn();
   void updateBoard(UserInput & input);
   bool checkFurther(UserInput & input);
+  Piece getPiece(int x, int y);
+  void changeTurn();
 };
 
 class Menu{
