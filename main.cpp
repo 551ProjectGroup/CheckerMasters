@@ -1,12 +1,15 @@
 #include<cstdlib>
 #include "boardstate.h"
+#include "tester.h"
 
 void userOneMove(BoardState * game, UserInput & input){
   bool legal = false;
   if (input.getType() == 0){ // 0 -> normal input    
     while (legal == false){
       legal = game->checkLegality(input); 
-      input = GUIFunction(game);
+      if (legal == false){
+	input = GUIFunction(game);
+      }
     }
   
   //update the board state(board) -> BoardState
@@ -36,6 +39,7 @@ BoardState * userTurn(BoardState * game){
       }
     }
   }
+  game->changeTurn();
   return game;
 }
 
@@ -52,19 +56,19 @@ int main(){
   //Menu input -> user chooses color and difficulty -> Later
   //Discuss with Ashwin what kind of value it returns
   //Returns game status(new game(0), save game, load game, quit game, settings(maybe))
-  int gameStatus = 0;// = need input from user -> well need to change with mainMenu
+  int gameStatus = mainMenu();// = need input from user -> well need to change with mainMenu
   BoardState * gameBoard = NULL;
   if (gameStatus == 0){ 
   //If new game: color, difficulty, timer(maybe)   
-    int difficulty = 0; // = need input from user
-    int color = 0; // = need input from user
+    int difficulty = difficultyMenu(); // = need input from user
+    int color = colorMenu(); // = need input from user
     NewGame game(difficulty, color);
     gameBoard = newGameFunction(game);
   }
 
  
   //Load the graphics -> Ashwin
-  
+  GUIShow(gameBoard);
 
   //check whose turn it is -> in board state
   //either userTurn
