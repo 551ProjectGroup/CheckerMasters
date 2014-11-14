@@ -29,6 +29,7 @@ BoardState * easyMode(BoardState * game){
     int randomMove = rand() % comp->rArrNum;
     game->updateBoard(comp->regArray[randomMove]);
   }
+  GUIShow(game);
   return game;
 }
 
