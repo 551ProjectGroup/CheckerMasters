@@ -1,6 +1,47 @@
 #include<cstdlib>
 #include "boardstate.h"
 #include "tester.h"
+#include <cstdlib>
+#include <time.h>
+#include <vector>
+
+BoardState * easyMode(BoardState * game){
+  //userInput -> name is not appropriate, may need to change later
+  allMoves * comp = new allMoves();
+  //comp->jumpArray = new UserInput*(); 
+  comp->jArrNum = 0;
+  comp->rArrNum = 0;
+  game->comPossibleMoves(comp);
+  //choose random move and updateBoard
+  srand(time(NULL));
+  if (comp->jArrNum != 0){
+    int randomMove = rand() % comp->jArrNum;
+    game->updateBoard(comp->jumpArray[randomMove]);
+    bool further = game->checkFurther(comp->jumpArray[randomMove]);
+    while (further == true){
+      UserInput * nextMove = game->comMoreMove(comp->jumpArray[randomMove].getNext()); //takes in the previous next coordinate to use as the start coordinate. Also, computes the next move with a random value
+      game->updateBoard(*nextMove);
+      further = game->checkFurther(*nextMove);
+      comp->jumpArray[randomMove] = *nextMove;
+    }
+  }
+  else{
+    int randomMove = rand() % comp->rArrNum;
+    game->updateBoard(comp->regArray[randomMove]);
+  }
+  return game;
+}
+
+BoardState * computerTurn(BoardState * game, int difficulty){
+  if (difficulty == 0){
+    game = easyMode(game);
+  }
+  else{
+    //game = hardMode(game); // This mode is not currently enabled
+  }
+  game->changeTurn();
+  return game;
+}
 
 void userOneMove(BoardState * game, UserInput & input){
   bool legal = false;
@@ -40,6 +81,7 @@ BoardState * userTurn(BoardState * game){
     }
   }
   game->changeTurn();
+  GUIShow(game);
   return game;
 }
 
@@ -58,9 +100,10 @@ int main(){
   //Returns game status(new game(0), save game, load game, quit game, settings(maybe))
   int gameStatus = mainMenu();// = need input from user -> well need to change with mainMenu
   BoardState * gameBoard = NULL;
+  int difficulty;
   if (gameStatus == 0){ 
   //If new game: color, difficulty, timer(maybe)   
-    int difficulty = difficultyMenu(); // = need input from user
+    difficulty = difficultyMenu(); // = need input from user
     int color = colorMenu(); // = need input from user
     NewGame game(difficulty, color);
     gameBoard = newGameFunction(game);
@@ -78,7 +121,7 @@ int main(){
       gameBoard = userTurn(gameBoard);
     }
     else{
-      gameBoard = computerTurn(gameBoard);
+      gameBoard = computerTurn(gameBoard, difficulty);
     }
     //check for win loss
     /*int win = winLoss(gameBoard);
