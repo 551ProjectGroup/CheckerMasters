@@ -55,7 +55,7 @@ UserInput & GUIFunction(BoardState * game){
   return *user;
 }
 
-BoardState * computerTurn(BoardState * gameBoard){
+/*BoardState * computerTurn(BoardState * gameBoard){
   GUIShow(gameBoard);
   std::cout << "Enter Computer Turn (cX, cY, nX, nY) (i.e 0 0 1 1)" << std::endl;
   char * line;
@@ -73,5 +73,5 @@ BoardState * computerTurn(BoardState * gameBoard){
   gameBoard->changeTurn();
   return gameBoard;
 }
-
+*/
 #endif
