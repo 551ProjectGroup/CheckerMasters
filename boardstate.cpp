@@ -240,7 +240,7 @@ void BoardState::updateBoard(UserInput & input){
 bool BoardState::checkFurther(UserInput & input){
   int nY = input.getNext().y;
   int nX = input.getNext().x;
-  int cY = input.getCurrent().y;
+  //int cY = input.getCurrent().y;
   int cX = input.getCurrent().x;
   int opponentColor;
   if (turn == 0){
@@ -258,7 +258,7 @@ bool BoardState::checkFurther(UserInput & input){
   if (cX - nX == 1 || cX - nX == -1){
     return false;
   }
-  if ((nY > 1 && board[cX][cY].getType() == 1) || (nY>1 && opponentColor == compColor)){
+  if ((nY > 1 && board[nX][nY].getType() == 1) || (nY>1 && opponentColor == compColor)){
     if ( nX > 1){
       if (board[nX-1][nY-1].getPieceColor() == opponentColor && board[nX-2][nY-2].getEmpty() == 1){
 	return true;
@@ -270,7 +270,7 @@ bool BoardState::checkFurther(UserInput & input){
       }
     }
   }
-  if ((nY <6 && board[cX][cY].getType() == 1) || (nY < 6 && opponentColor == userColor)){
+  if ((nY <6 && board[nX][nY].getType() == 1) || (nY < 6 && opponentColor == userColor)){
     if ( nX > 1){
       if (board[nX-1][nY+1].getPieceColor() == opponentColor && board[nX-2][nY+2].getEmpty() == 1){
 	return true;
