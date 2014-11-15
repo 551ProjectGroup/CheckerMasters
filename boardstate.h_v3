@@ -1,0 +1,37 @@
+#ifndef BOARDSTATE_H
+#define BOARDSTATE_H
+#include "userinput.h"
+#include "piece.h"
+#include "struct.h"
+
+
+
+class BoardState{
+ private:
+  Piece board[8][8];
+  int userColor; // 1-> red, 0 -> black
+  int compColor;
+  int turn; //0 <- user, 1 <- computer
+  int startOfUserTurn; // 0 <- start of user turn, 1 <- user has further moves
+  int lastX; //gives the coordinate of the last piece that moved
+  int lastY; //gives the coordinate of the last piece that moved
+ public:
+  BoardState(int color);
+  bool checkLegality(UserInput& input);
+  bool checkLegalJump(UserInput & input);
+  bool checkNoJumps(UserInput & input);
+  bool checkRegMove(UserInput & input);
+  int getTurn();
+  int getLastX();
+  int getLastY();
+  int getStartOfUserTurn();
+  void updateBoard(UserInput & input);
+  bool checkFurther(UserInput & input);
+  Piece getPiece(int x, int y);
+  void changeTurn();
+  void changeStep(int change, int x, int y);
+  void comPossibleMoves(allMoves * comp);
+  UserInput * comMoreMove(Coor start);
+};
+
+#endif // BOARDSTATE_H
