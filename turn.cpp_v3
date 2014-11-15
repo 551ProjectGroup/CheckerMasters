@@ -1,0 +1,70 @@
+#include "boardstate.h"
+#include "displayboard.h"
+#include <cstdlib>
+#include <time.h>
+#include <vector>
+#include <QGraphicsScene>
+#include "turn.h"
+#include <QMessageBox>
+
+BoardState * easyMode(BoardState * game){
+  //userInput -> name is not appropriate, may need to change later
+  allMoves * comp = new allMoves();
+  //comp->jumpArray = new UserInput*();
+  comp->jArrNum = 0;
+  comp->rArrNum = 0;
+  game->comPossibleMoves(comp);
+  //choose random move and updateBoard
+  srand(time(NULL));
+  int randomMove;
+  if (comp->jArrNum != 0){
+    randomMove = rand() % comp->jArrNum;
+    game->updateBoard(comp->jumpArray[randomMove]);
+    bool further = game->checkFurther(comp->jumpArray[randomMove]);
+    while (further == true){
+      UserInput * nextMove = game->comMoreMove(comp->jumpArray[randomMove].getNext()); //takes in the previous next coordinate to use as the start coordinate. Also, computes the next move with a random value
+      game->updateBoard(*nextMove);
+      further = game->checkFurther(*nextMove);
+      comp->jumpArray[randomMove] = *nextMove;
+    }
+  }
+  else{
+    randomMove = rand() % comp->rArrNum;
+    game->updateBoard(comp->regArray[randomMove]);
+  }
+  return game;
+}
+
+BoardState * computerTurn(BoardState * game, int difficulty){
+ if (difficulty == 0){
+    game = easyMode(game);
+  }
+  else{
+    //game = hardMode(game); // This mode is not currently enabled
+  }
+  game->changeTurn();
+  return game;
+}
+
+BoardState * userTurn(BoardState * game, UserInput & input){
+    if (game->getStartOfUserTurn() == 1){ //This means the user is in the middle of a turn
+       if (input.getCurrent().x != game->getLastX() || input.getCurrent().y != game->getLastY()){ //the user didn't select the same piece
+           return game;
+       }
+    }
+    bool legal = game->checkLegality(input);
+    if (legal == false){
+       return game; //user made an illegal move
+    }
+    game->updateBoard(input);
+    bool further = game->checkFurther(input);
+    if (further == true){
+       game->changeStep(1, input.getNext().x, input.getNext().y);
+       return game;
+    }
+    else{
+        game->changeStep(0, input.getNext().x, input.getNext().y);
+        game->changeTurn(); //user has completed his turn. Now computer's turn
+        return game;
+    }
+}
