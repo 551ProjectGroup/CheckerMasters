@@ -13,14 +13,15 @@ BoardState * easyMode(BoardState * game){
   //comp->jumpArray = new UserInput*();
   comp->jArrNum = 0;
   comp->rArrNum = 0;
-  game->comPossibleMoves(comp);
+  game->PossibleMoves(comp, game->getCompColor());
   //choose random move and updateBoard
   srand(time(NULL));
   int randomMove;
+  bool further;
   if (comp->jArrNum != 0){
     randomMove = rand() % comp->jArrNum;
     game->updateBoard(comp->jumpArray[randomMove]);
-    bool further = game->checkFurther(comp->jumpArray[randomMove]);
+    further = game->checkFurther(comp->jumpArray[randomMove]);
     while (further == true){
       UserInput * nextMove = game->comMoreMove(comp->jumpArray[randomMove].getNext()); //takes in the previous next coordinate to use as the start coordinate. Also, computes the next move with a random value
       game->updateBoard(*nextMove);
@@ -31,6 +32,8 @@ BoardState * easyMode(BoardState * game){
   else{
     randomMove = rand() % comp->rArrNum;
     game->updateBoard(comp->regArray[randomMove]);
+    //checks if there is a newly promoted king and sets upgrade to 0 (check further usually also check for further moves but there is no way the computer could have additional moves in this case)
+    further = game->checkFurther(comp->regArray[randomMove]);
   }
   return game;
 }
