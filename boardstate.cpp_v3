@@ -2,9 +2,40 @@
 #include <cstdlib>
 #include <vector>
 #include "boardstate.h"
+#include <QMessageBox>
+
+void BoardState::emptyBoard(){
+    for (int i = 0; i<8; i++){
+        for (int j = 0; j<8; j++){
+            Piece * newPiece = new Piece();
+            board[j][i] = *newPiece;
+        }
+    }
+}
+
+bool BoardState::winLoss(void){
+    int checkPiece;
+    if (turn == 0){
+        checkPiece = userColor;
+    }
+    else{
+        checkPiece = compColor;
+    }
+    allMoves * moves = new allMoves();
+    //comp->jumpArray = new UserInput*();
+    moves->jArrNum = 0;
+    moves->rArrNum = 0;
+    PossibleMoves(moves, checkPiece);
+    if (moves->jArrNum == 0 && moves->rArrNum == 0){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
 
 void BoardState::changeStep(int change, int x, int y){
-    startOfUserTurn == change;
+    startOfUserTurn = change;
     lastX = x;
     lastY = y;
 }
@@ -19,6 +50,10 @@ int BoardState::getLastY(void){
 
 int BoardState::getLastX(void){
     return lastX;
+}
+
+int BoardState::getCompColor(void){
+    return compColor;
 }
 
 
@@ -78,7 +113,7 @@ bool BoardState::checkLegalJump(UserInput & input){
     return false;
   }
 }
-bool BoardState::checkNoJumps(UserInput & Input){
+bool BoardState::checkNoJumps(){
   for(int i = 0; i < 8; i++){
     for(int j =0; j <8; j++){
       if (board[i][j].getPieceColor() == userColor && board[i][j].getEmpty() != 1){
@@ -150,7 +185,7 @@ bool BoardState::checkLegality(UserInput & input){
   else{
     bool regMove = checkRegMove(input);
     if (regMove == true){
-      bool noJump = checkNoJumps(input);
+      bool noJump = checkNoJumps();
       if (noJump == true){
     return true;
       }
@@ -356,26 +391,33 @@ UserInput * BoardState::comMoreMove(Coor start){
   return nextMove;
 }
 
-void BoardState::comPossibleMoves(allMoves * comp){
-  for (int i = 0; i < 8; i++){
+void BoardState::PossibleMoves(allMoves * comp, int checkColor){
+   int opponentColor;
+   if (checkColor == 0){
+       opponentColor = 1;
+   }
+   else{
+       opponentColor = 0;
+   }
+   for (int i = 0; i < 8; i++){
     for (int j = 0; j< 8; j++){
-      if (board[j][i].getPieceColor() == compColor){
-    Coor current;
-    Coor next;
-    current.x = j;
-    current.y = i;
-    if (i < 6){
-      if ( j > 1){
-        if (board[j-1][i+1].getPieceColor() == userColor && board[j-2][i+2].getEmpty() == 1){
-          next.x = j-2;
-          next.y = i+2;
-          UserInput * newElement = new UserInput(0, current, next);
-          (comp->jumpArray).push_back(*newElement);
-          comp->jArrNum++;
-        }
-      }
+      if (board[j][i].getPieceColor() == checkColor){
+        Coor current;
+        Coor next;
+        current.x = j;
+        current.y = i;
+        if (i < 6 && (board[j][i].getType() == 1 || board[j][i].getPieceColor() == compColor)){
+            if ( j > 1){
+                if (board[j-1][i+1].getPieceColor() == opponentColor && board[j-2][i+2].getEmpty() == 1){
+                    next.x = j-2;
+                    next.y = i+2;
+                    UserInput * newElement = new UserInput(0, current, next);
+                    (comp->jumpArray).push_back(*newElement);
+                    comp->jArrNum++;
+                }
+            }
       if ( j < 6){
-        if (board[j+1][i+1].getPieceColor() == userColor && board[j+2][i+2].getEmpty() == 1){
+        if (board[j+1][i+1].getPieceColor() == opponentColor && board[j+2][i+2].getEmpty() == 1){
           next.x = j+2;
           next.y = i+2;
           UserInput * newElement = new UserInput(0, current, next);
@@ -384,9 +426,9 @@ void BoardState::comPossibleMoves(allMoves * comp){
         }
       }
     }
-    if (i > 1 && board[j][i].getType() == 1){
+    if (i > 1 && (board[j][i].getType() == 1 || board[j][i].getPieceColor() == userColor)){
       if ( j > 1){
-        if (board[j-1][i-1].getPieceColor() == userColor && board[j-2][i-2].getEmpty() == 1){
+        if (board[j-1][i-1].getPieceColor() == opponentColor && board[j-2][i-2].getEmpty() == 1){
           next.x = j-2;
           next.y = i-2;
           UserInput * newElement = new UserInput(0, current, next);
@@ -395,7 +437,7 @@ void BoardState::comPossibleMoves(allMoves * comp){
         }
       }
       if ( j < 6){
-        if (board[j+1][i-1].getPieceColor() == userColor && board[j+2][i-2].getEmpty() == 1){
+        if (board[j+1][i-1].getPieceColor() == opponentColor && board[j+2][i-2].getEmpty() == 1){
           next.x = j+2;
           next.y = i-2;
           UserInput * newElement = new UserInput(0, current, next);
@@ -404,27 +446,27 @@ void BoardState::comPossibleMoves(allMoves * comp){
         }
       }
     }
-    if (i < 7){ // moving to regular moves
-      if ( j > 0){
-        if (board[j-1][i+1].getEmpty() == 1){
-          next.x = j-1;
-          next.y = i+1;
-          UserInput * newElement = new UserInput(0, current, next);
-          (comp->regArray).push_back(*newElement);
-          comp->rArrNum++;
+    if (i <7 && (board[j][i].getType() == 1 || board[j][i].getPieceColor() == compColor)){ // moving to regular moves
+        if ( j > 0){
+          if (board[j-1][i+1].getEmpty() == 1){
+            next.x = j-1;
+            next.y = i+1;
+            UserInput * newElement = new UserInput(0, current, next);
+            (comp->regArray).push_back(*newElement);
+            comp->rArrNum++;
+            }
+          }
+        if ( j < 7){
+            if (board[j+1][i+1].getEmpty() == 1){
+                next.x = j+1;
+                next.y = i+1;
+                UserInput * newElement = new UserInput(0, current, next);
+                (comp->regArray).push_back(*newElement);
+                comp->rArrNum++;
+            }
         }
       }
-      if ( j < 7){
-        if (board[j+1][i+1].getEmpty() == 1){
-          next.x = j+1;
-          next.y = i+1;
-          UserInput * newElement = new UserInput(0, current, next);
-          (comp->regArray).push_back(*newElement);
-          comp->rArrNum++;
-        }
-      }
-    }
-    if (i > 0 && board[j][i].getType() == 1){
+    if (i > 0 && (board[j][i].getType() == 1 || board[j][i].getPieceColor() == userColor)){
       if ( j > 0){
         if (board[j-1][i-1].getEmpty() == 1){
           next.x = j-1;
@@ -444,7 +486,7 @@ void BoardState::comPossibleMoves(allMoves * comp){
         }
       }
     }
-      }
     }
+  }
   }
 }
