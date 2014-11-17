@@ -1,11 +1,3 @@
-#ifndef BOARDSTATE_H
-#define BOARDSTATE_H
-#include "userinput.h"
-#include "piece.h"
-#include "struct.h"
-
-
-
 class BoardState{
  private:
   Piece board[8][8];
@@ -19,19 +11,22 @@ class BoardState{
   BoardState(int color);
   bool checkLegality(UserInput& input);
   bool checkLegalJump(UserInput & input);
-  bool checkNoJumps(UserInput & input);
+  bool checkNoJumps();
   bool checkRegMove(UserInput & input);
   int getTurn();
   int getLastX();
   int getLastY();
+  int getCompColor();
   int getStartOfUserTurn();
   void updateBoard(UserInput & input);
   bool checkFurther(UserInput & input);
   Piece getPiece(int x, int y);
   void changeTurn();
   void changeStep(int change, int x, int y);
-  void comPossibleMoves(allMoves * comp);
+  void PossibleMoves(allMoves * comp, int checkPiece);
   UserInput * comMoreMove(Coor start);
+  void emptyBoard();
+  bool winLoss();
 };
 
 #endif // BOARDSTATE_H
