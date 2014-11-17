@@ -7,23 +7,22 @@ DisplayBoard::DisplayBoard()
 {
 }
 
-guiPiece * DisplayBoard::makeScene(BoardState *currstate, QGraphicsScene *scene,  MainWindow * window)
+void DisplayBoard::makeScene(BoardState *currstate, QGraphicsScene *scene, MainWindow *w)
 {
     addBoardScene(scene);
-    guiPiece *g = new guiPiece[24];
+    //guiPiece *g = new guiPiece[24];
     //std::vector< guiPiece > * g;
     int count=0;
     for(int i=0;i<8;i++) {
         for(int j=0;j<8;j++) {
             if(!currstate->getPiece(i,j).getEmpty()) {
-                guiPiece * gui = new guiPiece(i,j,((currstate->getPiece(i,j)).getPieceColor()), currstate, window);
-                scene->addItem(gui);
+                guiPiece *g = new guiPiece(currstate->getPiece(i,j).getType(),i,j,currstate->getPiece(i,j).getPieceColor(),currstate,w);
+                scene->addItem(g);
                 count++;
                // scene->addEllipse((i*100)+25,(j*100)+25,50,50);
             }
         }
     }
-    return g;
 }
 
 void DisplayBoard::addBoardScene(QGraphicsScene *scene)
@@ -40,15 +39,15 @@ void DisplayBoard::addBoardScene(QGraphicsScene *scene)
     }
 }
 
-void DisplayBoard::displayScene(BoardState *currstate, QGraphicsScene *scene, MainWindow * window)
+void DisplayBoard::displayScene(BoardState *currstate, QGraphicsScene *scene, MainWindow *w)
 {
     addBoardScene(scene);
     int count=0;
     for(int i=0;i<8;i++) {
         for(int j=0;j<8;j++) {
             if(!currstate->getPiece(i,j).getEmpty()) {
-                guiPiece g(i,j,currstate->getPiece(i,j).getPieceColor(), currstate, window);
-                scene->addItem(&g);
+               guiPiece *g = new guiPiece(currstate->getPiece(i,j).getType(),i,j,currstate->getPiece(i,j).getPieceColor(),currstate,w);
+                scene->addItem(g);
                 count++;
                // scene->addEllipse((i*100)+25,(j*100)+25,50,50);
             }
