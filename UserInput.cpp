@@ -8,6 +8,8 @@ QPointF UserInput::getCurrentPosition() const
 void UserInput::setCurrentPosition(const QPointF &value)
 {
     currentPosition = value;
+    current.x = convertcurX();
+    current.y = convertcurY();
 }
 
 QPointF UserInput::getNextPosition() const
@@ -18,13 +20,15 @@ QPointF UserInput::getNextPosition() const
 void UserInput::setNextPosition(const QPointF &value)
 {
     nextPosition = value;
+    next.x = convertnxtX();
+    next.y = convertnxtY();
 }
 
 int UserInput::computePixelToBoard(int x)
 {
-    for(int i=1;i<9;i++) {
+    for(int i=0;i<8;i++) {
         if(x >=(i*100) && x<=((i+1)*100)) {
-            return i-1;
+            return i;
         }
     }
     return -1;
