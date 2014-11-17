@@ -56,3 +56,14 @@ public:
     Coor getCurrent(){ return current;}
     Coor getNext(){ return next;}
 };
+
+
+struct _allMoves{
+  std::vector< UserInput > jumpArray;
+  int jArrNum;
+  std::vector< UserInput > regArray;
+  int rArrNum;
+};
+typedef struct _allMoves allMoves;
+
+#endif // USERINPUT_H
