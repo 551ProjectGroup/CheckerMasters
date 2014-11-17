@@ -11,6 +11,8 @@ Q_OBJECT                                        //This guy is needed to start a 
 int difficulty;                                 //Difficulty
 int color;                                      //user colour.
 BoardState *gamestate;
+int winloss;
+int compturn;
 
 public:
 virtual void run();
@@ -23,7 +25,8 @@ void setDifficulty(int d);
 int getDifficulty(void);
 void setPieceColor(int color);
                     //This guy renders the board pieces and gives back a board.
-
+void winLoss(int val);
+void compplays(int play);
 BoardState *getGamestate() const;
 void setGamestate(BoardState *value);
 };
