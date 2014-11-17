@@ -3,7 +3,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include "userinput.h"
 #include "turn.h"
-
+#include <QMessageBox>
 
 int guiPiece::getBoardX() const
 {
@@ -51,13 +51,28 @@ void guiPiece::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     QPointF point = event->scenePos();
     uin.setNextPosition(point);
     QGraphicsItem::mouseReleaseEvent(event);
+    bool userWin = false;
+    bool compWin = false;
     if(trueState->getTurn() == 0){
-           trueState = userTurn(trueState, uin);
+       trueState = userTurn(trueState, uin);
+       userWin = trueState->winLoss();
+       if (userWin == true){
+           window->updateGame(trueState);
+           QMessageBox::information(NULL,"WIN","You Win!");
+           trueState->emptyBoard();
        }
-       if(trueState->getTurn() == 1){
-           trueState = computerTurn(trueState, window->getDifficulty());
-       }
-       window->updateGame(trueState);
+    }
+    if(trueState->getTurn() == 1 && userWin == false){
+        trueState = computerTurn(trueState, window->getDifficulty());
+        compWin = trueState->winLoss();
+        if (compWin == true){
+            window->updateGame(trueState);
+            QMessageBox::information(NULL,"LOSS","You Lost");
+            trueState->emptyBoard();
+        }
+    }
+
+    window->updateGame(trueState);
 }
 
 bool guiPiece::getMoved() const
