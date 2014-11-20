@@ -12,7 +12,7 @@ class BoardState{
   int userColor; // 1-> red, 0 -> black
   int compColor;
   int turn; //0 <- user, 1 <- computer
-  int startOfUserTurn; // 0 <- start of user turn, 1 <- user has further moves
+  int startOfUserTurn; // 0 <- start of turn, 1 <- player has further moves -- used for both computer and user
   int lastX; //gives the coordinate of the last piece that moved
   int lastY; //gives the coordinate of the last piece that moved
  public:
