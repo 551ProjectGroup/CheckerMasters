@@ -4,6 +4,179 @@
 #include "boardstate.h"
 #include <QMessageBox>
 
+BoardState & BoardState::operator=(BoardState & rhs){
+    if (this != &rhs){
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                board[j][i] = rhs.board[j][i];
+            }
+        }
+        userColor = rhs.userColor;
+        compColor = rhs.compColor;
+        turn = rhs.turn;
+        startOfUserTurn = rhs.startOfUserTurn;
+        lastX = rhs.lastX;
+        lastY = rhs.lastY;
+    }
+    return *this;
+}
+
+int BoardState::checkMoveValue(int depth){
+    if (depth < 1){
+        int compValue = 0;
+        int userValue = 0;
+        for (int i = 0; i< 8; i++){
+            for (int j = 0; j<8; j++){
+                if (board[j][i].getPieceColor() == userColor && board[j][i].getType()==0){
+                    userValue = userValue + 3;
+                }
+                if (board[j][i].getPieceColor() == userColor && board[j][i].getType()==1){
+                    userValue = userValue + 4;
+                }
+                if (board[j][i].getPieceColor() == compColor && board[j][i].getType()==0){
+                    compValue = compValue +3;
+                }
+                if (board[j][i].getPieceColor() == compColor && board[j][i].getType()==1){
+                    compValue = compValue +4;
+                }
+            }
+        }
+        return (userValue - compValue);
+    }
+    else{
+        int checkPiece;
+        if (turn == 0){
+            checkPiece = userColor;
+        }
+        else{
+            checkPiece = compColor;
+        }
+        allMoves * moves = new allMoves();
+        moves->jArrNum = 0;
+        moves->rArrNum = 0;
+        PossibleMoves(moves, checkPiece);
+        if (moves->jArrNum == 0 && moves->rArrNum == 0){
+            if (turn == 0){
+                return -100;
+            }
+            else{
+                return 100;
+            }
+        }
+        if (moves->jArrNum == 0){
+            int best;
+            if (turn == 0){
+                best = -100;
+            }
+            else{
+                best = 100;
+            }
+            for (int i = 0; i < moves->rArrNum; i++){
+                BoardState newCopy = *this;
+                newCopy.updateBoard(moves->regArray[i]);
+                newCopy.changeTurn();
+                int result = checkMoveValue(depth - 1);
+                if (result > 50){ // if the move is a winning move, move loses value the more moves it takes to win
+                    result--;
+                }
+                if (result < -50){
+                    result++;
+                }
+                if (turn == 0 && (result > best)){
+                    best = result;
+                }
+                else if(turn == 1 && (result < best)){
+                    best = result;
+                }
+            }
+            return best;
+        }
+        else{
+            jumpCompare best;
+            if (turn == 0){
+                best.value = -100;
+            }
+            else{
+                best.value = 100;
+            }
+            for (int i = 0; i < moves->jArrNum; i++){
+                BoardState newCopy = *this;
+                jumpCompare result = newCopy.detJumpOrder(moves->jumpArray[i], depth);
+                if (result.value > 50){ // if the move is a winning move, move loses value the more moves it takes to win
+                    result.value--;
+                }
+                if (result.value < -50){
+                    result.value++;
+                }
+                if (turn == 0 && (result.value > best.value)){
+                    best = result;
+                }
+                else if(turn == 1 && (result.value < best.value)){
+                    best = result;
+                }
+            }
+            return best.value;
+        }
+    }
+}
+
+jumpCompare BoardState::detJumpOrder(UserInput & currentMove, int depth){
+    jumpCompare end;
+    end.jumpOrder.push_back(currentMove);
+    end.jOrderSize = 1;
+    BoardState updated = *this;
+    updated.updateBoard(currentMove);
+    return updated.detJumpOrderHelper(end, depth);
+}
+
+jumpCompare BoardState::detJumpOrderHelper(jumpCompare lowerMove, int depth){
+    //bool further = checkFurther(lowerMove.jumpOrder[jOrderSize-1]);
+    int checkPiece;
+    if (turn == 0){
+        checkPiece = userColor;
+    }
+    else{
+        checkPiece = compColor;
+    }
+    allMoves * moves = new allMoves();
+    moves->jArrNum = 0;
+    moves->rArrNum = 0;
+    PossibleMoves(moves, checkPiece);
+    if (moves->jArrNum == 0){
+        changeTurn();
+        //Value recursion
+        int moveValue = checkMoveValue(depth - 1);
+        //return jumpCompare
+        lowerMove.value = moveValue;
+        return lowerMove;
+    }
+    else{
+        jumpCompare best;
+        if (turn == 0){
+            best.value = -100;
+        }
+        else{
+            best.value = 100;
+        }
+        for(int i = 0; i < moves->jArrNum; i++){
+          BoardState newCopy = *this;
+          newCopy.updateBoard(moves->jumpArray[i]);
+          jumpCompare jCopy = lowerMove;
+          jCopy.jOrderSize++;
+          jCopy.jumpOrder.push_back(moves->jumpArray[i]);
+          jumpCompare result = newCopy.detJumpOrderHelper(jCopy, depth);
+          if (turn == 0 && (result.value > best.value)){
+              best = result;
+          }
+          else if(turn == 1 && (result.value < best.value)){
+              best = result;
+          }
+        }
+        return best;
+    }
+}
+
+
 void BoardState::emptyBoard(){
     for (int i = 0; i<8; i++){
         for (int j = 0; j<8; j++){
