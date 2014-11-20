@@ -231,6 +231,12 @@ int BoardState::getCompColor(void){
 
 
 void BoardState::changeTurn(void){
+  startOfUserTurn = 0;
+  if (board[lastX][lastY].getUpgrade() == 1){
+    Piece * update = new Piece(board[lastX][lastY].getPieceColor(), 1, 0);
+    board[lastX][lastY] = *update;
+    delete update;
+  }
   if (turn == 1){
     turn = 0;
   }
@@ -435,6 +441,8 @@ void BoardState::updateBoard(UserInput & input){
   int nX = input.getNext().x;
   int cY = input.getCurrent().y;
   int cX = input.getCurrent().x;
+  lastX = nX;
+  lastY = nY;
   if (board[cX][cY].getPieceColor() == userColor){
     if (nY == 0 && board[cX][cY].getType() != 1){
       Piece * update = new Piece(board[cX][cY].getPieceColor(), 1, 1);
@@ -461,6 +469,7 @@ void BoardState::updateBoard(UserInput & input){
   delete newPiece;
   //deletes middle piece in a jump
   if (cX - nX == -2 || cX - nX == 2){
+    startOfUserTurn = 1; //sets the middle of the turn -- used for both computer and user
     Piece * deletePiece = new Piece();
     board[cX - ((cX - nX) /2)][cY - ((cY - nY)/2)] = *deletePiece;
     delete deletePiece;
@@ -574,7 +583,8 @@ void BoardState::PossibleMoves(allMoves * comp, int checkColor){
    }
    for (int i = 0; i < 8; i++){
     for (int j = 0; j< 8; j++){
-      if (board[j][i].getPieceColor() == checkColor){
+      if ((startOfUserTurn == 1 && j == lastX && i == lastY) || startOfUserTurn == 0){
+        if (board[j][i].getPieceColor() == checkColor && board[j][i].getUpgrade() == 0){
         Coor current;
         Coor next;
         current.x = j;
@@ -658,8 +668,9 @@ void BoardState::PossibleMoves(allMoves * comp, int checkColor){
           comp->rArrNum++;
         }
       }
-    }
-    }
+        }
+        }
+      }
   }
   }
 }
