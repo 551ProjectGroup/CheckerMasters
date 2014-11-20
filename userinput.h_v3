@@ -66,4 +66,19 @@ struct _allMoves{
 };
 typedef struct _allMoves allMoves;
 
+struct _jumpCompare{
+    std::vector <UserInput> jumpOrder;
+    int jOrderSize;
+    int value;
+    _jumpCompare & operator =(_jumpCompare & rhs){
+        if (this != &rhs){
+            jumpOrder = rhs.jumpOrder;
+            jOrderSize = rhs.jOrderSize;
+            value = rhs.value;
+        }
+        return *this;
+    }
+};
+typedef struct _jumpCompare jumpCompare;
+
 #endif // USERINPUT_H
