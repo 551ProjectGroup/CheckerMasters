@@ -7,6 +7,78 @@
 #include "turn.h"
 #include <QMessageBox>
 
+BoardState * hardMode(BoardState * game){
+  //userInput -> name is not appropriate, may need to change later
+  allMoves * comp = new allMoves();
+  //comp->jumpArray = new UserInput*();
+  comp->jArrNum = 0;
+  comp->rArrNum = 0;
+  game->PossibleMoves(comp, game->getCompColor());
+  int depth = 3; //how far the computer searches
+  srand(time(NULL));
+  if (comp->jArrNum != 0){
+      //takes in middle move -> calls a function returns a structure (vector of userinput and a value)
+    //compares the structure to the best structure
+    //if same, pick random otherwise pick lowest
+      jumpCompare best;
+      best.value = 100;
+      for(int i =0; i < comp->jArrNum; i++){
+         BoardState newCopy = *game;
+         jumpCompare result = newCopy.detJumpOrder(comp->jumpArray[i], depth);
+         if (result.value == best.value){
+            int randomMove = rand() % 1;
+            if (randomMove == 1){
+                best = result;
+            }
+         }
+         else if (result.value < best.value){
+            best = result;
+         }
+      }
+       //now has best structure
+
+      //for loop which does the following
+      //executes the moves
+      //updates the board
+      for (int i = 0; i < best.jOrderSize; i++){
+          game->updateBoard(best.jumpOrder[i]);
+      }
+      return game;
+      //return
+  }
+  else{
+        //for loop
+      //sub function of jump function
+      //compares the numbers
+      //if same, pick random, otherwise pick lowest
+      int best = 100;
+      int bestIndex = 0;
+      for (int i = 0; i < comp->rArrNum; i++){
+          BoardState newCopy = *game;
+          newCopy.updateBoard(comp->regArray[i]);
+          newCopy.changeTurn();
+          int result = newCopy.checkMoveValue(depth);
+          if (result == best){
+             int randomMove = rand() % 1;
+             if (randomMove == 1){
+                 best = result;
+                 bestIndex = i;
+             }
+          }
+          else if (result < best){
+             best = result;
+             bestIndex = i;
+          }
+      }
+      //now has the best number
+      //execute
+      //update board
+      game->updateBoard(comp->regArray[bestIndex]);
+      //return
+      return game;
+  }
+}
+
 BoardState * easyMode(BoardState * game){
   //userInput -> name is not appropriate, may need to change later
   allMoves * comp = new allMoves();
@@ -39,11 +111,11 @@ BoardState * easyMode(BoardState * game){
 }
 
 BoardState * computerTurn(BoardState * game, int difficulty){
- if (difficulty == 0){
+  if (difficulty == 0){
     game = easyMode(game);
   }
-  else{
-    //game = hardMode(game); // This mode is not currently enabled
+  else if(difficulty == 1){
+    game = hardMode(game); // This mode is not currently enabled
   }
   game->changeTurn();
   return game;
