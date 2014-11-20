@@ -1,3 +1,11 @@
+#ifndef BOARDSTATE_H
+#define BOARDSTATE_H
+#include "userinput.h"
+#include "piece.h"
+#include "struct.h"
+
+
+
 class BoardState{
  private:
   Piece board[8][8];
@@ -9,6 +17,7 @@ class BoardState{
   int lastY; //gives the coordinate of the last piece that moved
  public:
   BoardState(int color);
+  BoardState & operator=(BoardState & rhs);
   bool checkLegality(UserInput& input);
   bool checkLegalJump(UserInput & input);
   bool checkNoJumps();
@@ -27,6 +36,9 @@ class BoardState{
   UserInput * comMoreMove(Coor start);
   void emptyBoard();
   bool winLoss();
+  int checkMoveValue(int depth);
+  jumpCompare detJumpOrder(UserInput & currentMove, int depth);
+  jumpCompare detJumpOrderHelper(jumpCompare lowerMove, int depth);
 };
 
 #endif // BOARDSTATE_H
