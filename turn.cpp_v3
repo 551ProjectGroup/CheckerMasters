@@ -24,7 +24,7 @@ BoardState * hardMode(BoardState * game){
       best.value = 100;
       for(int i =0; i < comp->jArrNum; i++){
          BoardState newCopy = *game;
-         jumpCompare result = newCopy.detJumpOrder(comp->jumpArray[i], depth);
+         jumpCompare result = newCopy.detJumpOrder(comp->jumpArray[i], depth+1);
          if (result.value == best.value){
             int randomMove = rand() % 1;
             if (randomMove == 1){
