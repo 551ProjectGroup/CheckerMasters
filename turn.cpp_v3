@@ -7,21 +7,20 @@
 #include "turn.h"
 #include <QMessageBox>
 
-BoardState * hardMode(BoardState * game){
+BoardState * hardMode(BoardState * game, int depth){
   //userInput -> name is not appropriate, may need to change later
   allMoves * comp = new allMoves();
   //comp->jumpArray = new UserInput*();
   comp->jArrNum = 0;
   comp->rArrNum = 0;
   game->PossibleMoves(comp, game->getCompColor());
-  int depth = 3; //how far the computer searches
   srand(time(NULL));
   if (comp->jArrNum != 0){
       //takes in middle move -> calls a function returns a structure (vector of userinput and a value)
     //compares the structure to the best structure
     //if same, pick random otherwise pick lowest
       jumpCompare best;
-      best.value = 100;
+      best.value = 1000;
       for(int i =0; i < comp->jArrNum; i++){
          BoardState newCopy = *game;
          jumpCompare result = newCopy.detJumpOrder(comp->jumpArray[i], depth+1);
@@ -51,7 +50,7 @@ BoardState * hardMode(BoardState * game){
       //sub function of jump function
       //compares the numbers
       //if same, pick random, otherwise pick lowest
-      int best = 100;
+      int best = 1000;
       int bestIndex = 0;
       for (int i = 0; i < comp->rArrNum; i++){
           BoardState newCopy = *game;
@@ -111,11 +110,14 @@ BoardState * easyMode(BoardState * game){
 }
 
 BoardState * computerTurn(BoardState * game, int difficulty){
-  if (difficulty == 0){
+  if (difficulty == 0 || game->getMoveCounter() < 2){
     game = easyMode(game);
   }
   else if(difficulty == 1){
-    game = hardMode(game); // This mode is not currently enabled
+    game = hardMode(game, 5); // This mode is not currently enabled
+  }
+  else if(difficulty == 2){
+    //game = hardMode(game, 5);
   }
   game->changeTurn();
   return game;
