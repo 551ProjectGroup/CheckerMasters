@@ -11,6 +11,7 @@ BoardState & BoardState::operator=(BoardState & rhs){
                 board[j][i] = rhs.board[j][i];
             }
         }
+        moveCounter = rhs.moveCounter;
         userColor = rhs.userColor;
         compColor = rhs.compColor;
         turn = rhs.turn;
@@ -25,19 +26,101 @@ int BoardState::checkMoveValue(int depth){
     if (depth < 1){
         int compValue = 0;
         int userValue = 0;
+        int userKingX = 8;
+        int userKingY = 8;
+        int numberOfCloseKings = 0;
         for (int i = 0; i< 8; i++){
             for (int j = 0; j<8; j++){
                 if (board[j][i].getPieceColor() == userColor && board[j][i].getType()==0){
-                    userValue = userValue + 3;
+                    if (i == 1){ //keeps piece from getting behind computers pieces and becoming a king
+                        if (j == 0){
+                            if (board[j+1][0].getEmpty() == 1){
+                                userValue = userValue + 35 + ((7-i)%2);
+                            }
+                        }
+                        else if ( j == 7){
+                            if (board[j-1][0].getEmpty() == 1){
+                                userValue = userValue + 35 + ((7-i)%2);
+                            }
+                        }
+                        else{
+                          if (board[j-1][0].getEmpty() == 1 && board[j+1][0].getEmpty() == 1){
+                              userValue = userValue + 35 + ((7-i)%2);
+                          }
+                          else{
+                              userValue = userValue + 30 + ((7-i)%2);
+                          }
+                        }
+                    }
+                    if (i == 2){//keeps piece from getting behind computers pieces and becoming a king
+                        if (j == 0){
+                            if (board[j+1][1].getEmpty() == 1 && board[j+2][0].getEmpty()==1 && board[j][0].getEmpty()==1){
+                                userValue = userValue + 35 + ((7-i)%2);
+                            }
+                        }
+                        else if (j == 1){
+                            if (board[j-1][1].getEmpty()==1 && board[j+1][1].getEmpty() == 1 && board[j+2][0].getEmpty()==1 && board[j][0].getEmpty()==1){
+                                userValue = userValue + 35 + ((7-i)%2);
+                            }
+                        }
+                        else if (j == 6){
+                            if (board[j-1][1].getEmpty()==1 && board[j+1][1].getEmpty() == 1 && board[j-2][0].getEmpty()==1 && board[j][0].getEmpty()==1){
+                                userValue = userValue + 35 + ((7-i)%2);
+                            }
+                        }
+                        else if (j == 7){
+                            if (board[j-1][1].getEmpty()==1 && board[j-2][0].getEmpty()==1 && board[j][0].getEmpty()==1){
+                                userValue = userValue + 35 + ((7-i)%2);
+                            }
+                        }
+                        else{
+                          if (board[j-1][1].getEmpty()==1 && board[j+2][0].getEmpty() ==1 && board[j+1][1].getEmpty() == 1 && board[j-2][0].getEmpty()==1 && board[j][0].getEmpty()==1){
+                              userValue = userValue + 35 + ((7-i)%2);
+                          }
+                          else{
+                              userValue = userValue + 30 + ((7-i)%2);
+                          }
+                        }
+                    }
+                    else{
+                      userValue = userValue + 30 + ((7-i)%2);
+                    }
                 }
                 if (board[j][i].getPieceColor() == userColor && board[j][i].getType()==1){
-                    userValue = userValue + 4;
+                    userValue = userValue + 40;
+                    userKingX = j;
+                    userKingY = i;
                 }
                 if (board[j][i].getPieceColor() == compColor && board[j][i].getType()==0){
-                    compValue = compValue +3;
+                    compValue = compValue +30 + (i%2);
                 }
                 if (board[j][i].getPieceColor() == compColor && board[j][i].getType()==1){
-                    compValue = compValue +4;
+                    compValue = compValue +40;
+                    if (userKingX != 8){ //used to close the gap at the end of the game to allow comp to win
+                        int distanceX = userKingX - j;
+                        if (distanceX < 0){
+                            distanceX = -distanceX;
+                        }
+                        int distanceY = userKingY - i;
+                        if (distanceY < 0){
+                            distanceY = -distanceY;
+                        }
+                        int distance;
+                        if (distanceX > distanceY){
+                            distance = distanceX;
+                        }
+                        else{
+                            distance = distanceY;
+                        }
+                        if (distance > 3){
+                            compValue += (7-distance) ;
+                        }
+                        else{
+                            numberOfCloseKings++;
+                            compValue += 3; //max points for reaching within two squares - no further points for moving farther away
+                        }
+                        compValue += (2*numberOfCloseKings);
+                    }
                 }
             }
         }
@@ -57,29 +140,29 @@ int BoardState::checkMoveValue(int depth){
         PossibleMoves(moves, checkPiece);
         if (moves->jArrNum == 0 && moves->rArrNum == 0){
             if (turn == 0){
-                return -100;
+                return -1000;
             }
             else{
-                return 100;
+                return 1000;
             }
         }
         if (moves->jArrNum == 0){
             int best;
             if (turn == 0){
-                best = -100;
+                best = -1000;
             }
             else{
-                best = 100;
+                best = 1000;
             }
             for (int i = 0; i < moves->rArrNum; i++){
                 BoardState newCopy = *this;
                 newCopy.updateBoard(moves->regArray[i]);
                 newCopy.changeTurn();
                 int result = checkMoveValue(depth - 1);
-                if (result > 50){ // if the move is a winning move, move loses value the more moves it takes to win
+                if (result > 900){ // if the move is a winning move, move loses value the more moves it takes to win
                     result--;
                 }
-                if (result < -50){
+                if (result < -900){
                     result++;
                 }
                 if (turn == 0 && (result > best)){
@@ -94,18 +177,18 @@ int BoardState::checkMoveValue(int depth){
         else{
             jumpCompare best;
             if (turn == 0){
-                best.value = -100;
+                best.value = -1000;
             }
             else{
-                best.value = 100;
+                best.value = 1000;
             }
             for (int i = 0; i < moves->jArrNum; i++){
                 BoardState newCopy = *this;
                 jumpCompare result = newCopy.detJumpOrder(moves->jumpArray[i], depth);
-                if (result.value > 50){ // if the move is a winning move, move loses value the more moves it takes to win
+                if (result.value > 900){ // if the move is a winning move, move loses value the more moves it takes to win
                     result.value--;
                 }
-                if (result.value < -50){
+                if (result.value < -900){
                     result.value++;
                 }
                 if (turn == 0 && (result.value > best.value)){
@@ -153,10 +236,10 @@ jumpCompare BoardState::detJumpOrderHelper(jumpCompare lowerMove, int depth){
     else{
         jumpCompare best;
         if (turn == 0){
-            best.value = -100;
+            best.value = -1000;
         }
         else{
-            best.value = 100;
+            best.value = 1000;
         }
         for(int i = 0; i < moves->jArrNum; i++){
           BoardState newCopy = *this;
@@ -229,8 +312,12 @@ int BoardState::getCompColor(void){
     return compColor;
 }
 
+int BoardState::getMoveCounter(void){
+    return moveCounter;
+}
 
 void BoardState::changeTurn(void){
+  moveCounter++;
   startOfUserTurn = 0;
   if (board[lastX][lastY].getUpgrade() == 1){
     Piece * update = new Piece(board[lastX][lastY].getPieceColor(), 1, 0);
@@ -388,6 +475,7 @@ BoardState::BoardState(int color){
   lastY = 0;
   turn = color;
   userColor = color;
+  moveCounter = 0;
   if (color == 1){
     compColor = 0;
   }
