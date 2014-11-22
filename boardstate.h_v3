@@ -15,6 +15,7 @@ class BoardState{
   int startOfUserTurn; // 0 <- start of turn, 1 <- player has further moves -- used for both computer and user
   int lastX; //gives the coordinate of the last piece that moved
   int lastY; //gives the coordinate of the last piece that moved
+  int moveCounter; //changes everytime the turn changes
  public:
   BoardState(int color);
   BoardState & operator=(BoardState & rhs);
@@ -39,6 +40,7 @@ class BoardState{
   int checkMoveValue(int depth);
   jumpCompare detJumpOrder(UserInput & currentMove, int depth);
   jumpCompare detJumpOrderHelper(jumpCompare lowerMove, int depth);
+  int getMoveCounter();
 };
 
 #endif // BOARDSTATE_H
