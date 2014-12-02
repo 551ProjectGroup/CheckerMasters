@@ -7,53 +7,51 @@ DisplayBoard::DisplayBoard()
 {
 }
 
-guiPiece * DisplayBoard::makeScene(BoardState *currstate, QGraphicsScene *scene)
+void DisplayBoard::makeScene(BoardState *currstate, QGraphicsScene *scene, MainWindow *w)
 {
     addBoardScene(scene);
-    guiPiece *g = new guiPiece[24];
-    //std::vector< guiPiece > * g;
     int count=0;
     for(int i=0;i<8;i++) {
         for(int j=0;j<8;j++) {
             if(!currstate->getPiece(i,j).getEmpty()) {
-                Piece p = currstate->getPiece(i,j);
-                guiPiece * gui = new guiPiece(i,j,p.getPieceColor());
-                scene->addItem(gui);
+                guiPiece *g = new guiPiece(currstate->getPiece(i,j).getType(),i,j,currstate->getPiece(i,j).getPieceColor(),currstate,w);
+                scene->addItem(g);
                 count++;
-               // scene->addEllipse((i*100)+25,(j*100)+25,50,50);
             }
         }
     }
-    return g;
 }
 
 void DisplayBoard::addBoardScene(QGraphicsScene *scene)
 {
     QPen pen = QPen(Qt::black);
-    QRectF rec = QRectF(QPointF(0,0),QPointF(800,800));   //This is the place where we paint the board and its pieces. I am still writing it.
+    QColor colorOdd = QColor(139,69,19);
+    QColor colorEven = QColor(238,197,145);
+    QBrush brushEven = QBrush(colorEven,Qt::SolidPattern);
+    QBrush brushOdd = QBrush(colorOdd,Qt::SolidPattern);
+    QRectF rec = QRectF(QPointF(0,0),QPointF(640,640));   //This is the place where we paint the board and its pieces. I am still writing it.
     scene->addRect(rec,pen);
-    for (int i=1;i<8;i++) {
-        scene->addLine(i*100,0,i*100,800);
-   }
-
-    for(int j=1;j<8;j++) {
-        scene->addLine(0,j*100,800,j*100);
-    }
-}
-
-void DisplayBoard::displayScene(BoardState *currstate, QGraphicsScene *scene)
-{
-    addBoardScene(scene);
-    int count=0;
-    for(int i=0;i<8;i++) {
+    for (int i=0;i<8;i++) {
         for(int j=0;j<8;j++) {
-            if(!currstate->getPiece(i,j).getEmpty()) {
-                guiPiece g(i,j,currstate->getPiece(i,j).getPieceColor());
-                scene->addItem(&g);
-                count++;
-               // scene->addEllipse((i*100)+25,(j*100)+25,50,50);
-            }
+             if(i%2==0 && j%2==0) {
+
+        scene->addRect((i*80),(j*80),80,80,pen,brushEven);
+
+             }
+             else if(i%2==0 && j%2!=0){
+                 scene->addRect((i*80),(j*80),80,80,pen,brushOdd);
+             }
         }
-    }
+   }
+    for (int i=1;i<8;i=i+2) {
+        for(int j=0;j<8;j++) {
+             if(j%2!=0) {
+        scene->addRect((i*80),(j*80),80,80,pen,brushEven);
+             }
+             else{
+                 scene->addRect((i*80),(j*80),80,80,pen,brushOdd);
+             }
+        }
+   }
 
 }

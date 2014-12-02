@@ -27,7 +27,7 @@ void UserInput::setNextPosition(const QPointF &value)
 int UserInput::computePixelToBoard(int x)
 {
     for(int i=0;i<8;i++) {
-        if(x >=(i*100) && x<=((i+1)*100)) {
+        if(x >=(i*80) && x<=((i+1)*80)) {
             return i;
         }
     }

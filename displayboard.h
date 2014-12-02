@@ -8,10 +8,9 @@ class DisplayBoard
 {
 public:
     DisplayBoard();
-    guiPiece *makeScene(BoardState *currstate, QGraphicsScene *scene);
+    void makeScene(BoardState *currstate, QGraphicsScene *scene, MainWindow * window);
     void getStartGameScreen(QGraphicsScene *scene);
     void addBoardScene(QGraphicsScene *scene);
-    void displayScene(BoardState *currstate, QGraphicsScene *scene);
 };
 
 #endif // DISPLAYBOARD_H

@@ -13,14 +13,15 @@ class Piece{
  Piece(): empty(1), pieceColor(2), type(0), upgrade(0), state(1){}
  Piece(int c): empty(0), pieceColor(c), type(0), upgrade(0), state(1){}
  Piece(int c, int t, int u): empty(0), pieceColor(c), type(t), upgrade(u), state(1){}
-  Piece(Piece & rhs){
+ ~Piece(){}
+ Piece(const Piece & rhs){
     empty = rhs.empty;
     pieceColor = rhs.pieceColor;
     type = rhs.type;
     upgrade = rhs.upgrade;
     state = rhs.state;
   }
-  Piece & operator=(Piece & rhs){
+  Piece & operator=(const Piece & rhs){
    if (this != &rhs){
      empty = rhs.empty;
      pieceColor = rhs.pieceColor;

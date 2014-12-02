@@ -1,0 +1,28 @@
+This project was a joint work between Ashwin Dandekar, John McCrone, and Shaoyi Han
+
+Build Essentials
+1) Install the following libraries:
+   a) mesa-common-dev
+   b) libgl1-mesa-dev
+   c) libglu1-mesa-dev
+   d) qt4-default
+   e) qt5-default
+   f) qtmultimedia5-dev
+2) Remove the following library due to a known bug which does not display menus on current versions of Ubuntu (https://bugs.launchpad.net/ubuntu/+source/appmenu-qt5/+bug/1307619):
+   a) appmenu-qt5
+3) Execute the following commands:
+   a) qmake -qt=qt5 -makefile -o Makefile CheckersMaster.pro
+   b) make
+   c) ./CheckersMaster
+
+Acknowledgements
+Sounds:
+1) "Pixel Peeker Polka - slower" Kevin MacLeod (incompetech.com). Licensed under Creative Commons: By Attribution 3.0 http://creativecommons.org/licenses/by/3.0
+2) "Aurea Carmina" Kevin MacLeod (incompetech.com). Licensed under Creative Commons: By Attribution 3.0 http://creativecommons.org/licenses/by/3.0
+3) "Sneaky Snitch" Kevin MacLeod (incompetech.com). Licensed under Creative Commons: By Attribution 3.0 http://creativecommons.org/licenses/by/3.0
+4) "Egmont Overture" Kevin MacLeod (incompetech.com). Licensed under Creative Commons: By Attribution 3.0 http://creativecommons.org/licenses/by/3.0
+5) "Tick Sound" Licensed under Attribution 3.0
+
+Images:
+1) Crown Icon Clipart Royalty Free Public Domain Clipart - www.clipartbest.com/clipart-7caKLebzi
+2) Checkers Game - www.freeimages.co.uk/galleries/sports/lifestyle/slides/checkers_game_PC238712.htm

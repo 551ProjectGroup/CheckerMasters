@@ -7,15 +7,10 @@
 #include <vector>
 #include <QGraphicsScene>
 
+BoardState * easyMode(BoardState * game);
 
-UserInput GUIFunction(BoardState *state, guiPiece *piecearray);
+BoardState * computerTurn(BoardState * game, int difficulty);
 
-BoardState * easyMode(BoardState * game,QGraphicsScene *scene);
-
-BoardState * computerTurn(BoardState * game, int difficulty, QGraphicsScene *scene);
-
-void userOneMove(BoardState * game, UserInput & input, guiPiece * piecearray, QGraphicsScene *scene);
-
-BoardState * userTurn(BoardState * game, guiPiece *piecearray, QGraphicsScene *scene);
+BoardState * userTurn(BoardState * game, UserInput & input);
 
 #endif // TURN_H
