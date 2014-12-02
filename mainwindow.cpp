@@ -215,7 +215,6 @@ void MainWindow::on_actionForfeit_triggered()
     userlcd(bState);
     complcd(bState);
     movelcd(bState);
-    delete bState;
 }
 
 void MainWindow::on_actionHard_2_triggered()
