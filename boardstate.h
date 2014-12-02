@@ -16,9 +16,12 @@ class BoardState{
   int lastX; //gives the coordinate of the last piece that moved
   int lastY; //gives the coordinate of the last piece that moved
   int moveCounter; //changes everytime the turn changes
+  int numUserPieces; //number of user pieces
+  int numCompPieces;
  public:
   BoardState(int color);
   BoardState & operator=(BoardState & rhs);
+  ~BoardState(){}
   bool checkLegality(UserInput& input);
   bool checkLegalJump(UserInput & input);
   bool checkNoJumps();
@@ -41,6 +44,11 @@ class BoardState{
   jumpCompare detJumpOrder(UserInput & currentMove, int depth);
   jumpCompare detJumpOrderHelper(jumpCompare lowerMove, int depth);
   int getMoveCounter();
+  bool endGameWin();
+  void saveBoard(int difficulty, bool timerOn, int minutes, int seconds);
+  int * loadBoard();
+  int getUserPieces();
+  int getCompPieces();
 };
 
 #endif // BOARDSTATE_H
